@@ -21,14 +21,32 @@ resource "aws_ecs_task_definition" "foundry_vtt_task" {
         }
       ],
       "memory": ${var.foundry_container_memory},
-      "cpu": ${var.foundry_container_cpu}
+      "cpu": ${var.foundry_container_cpu},
       "environment": [
-        {"name":"TIMEZONE","value":"EST"},
-        {"name":"FOUNDRY_MINIFY_STATIC_FILES","value":"true"},
-        {"name":"FOUNDRY_USERNAME","value":"${var.foundry_user}"},
-        {"name":"FOUNDRY_PASSWORD","value":"${var.foundry_password}"},
-        {"name":"FOUNDRY_ADMIN_KEY","value":"${var.foundry_admin_key}"},
-        {"name":"FOUNDRY_LICENSE_KEY","value":"${var.foundry_license_key}"},
+        {
+          "name": "TIMEZONE",
+          "value": "${var.foundry_timezone}"
+        },
+        {
+          "name": "FOUNDRY_MINIFY_STATIC_FILES",
+          "value": "${var.foundry_minify_static_files}"
+        },
+        {
+          "name": "FOUNDRY_USERNAME",
+          "value": "${var.foundry_username}"
+        },
+        {
+          "name": "FOUNDRY_PASSWORD",
+          "value": "${var.foundry_password}"
+        },
+        {
+          "name": "FOUNDRY_ADMIN_KEY",
+          "value": "${var.foundry_admin_key}"
+        },
+        {
+          "name": "FOUNDRY_LICENSE_KEY",
+          "value": "${var.foundry_license_key}"
+        }
       ]
     }
   ]
