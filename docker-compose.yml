@@ -1,0 +1,26 @@
+version: '3.8'
+
+secrets:
+  config_json:
+    file: config.json
+
+services:
+  sigil:
+    image: felddy/foundryvtt:release
+    container_name: sigil
+    init: true
+    # restart: "on-failure"
+    ports: 
+      - target: 30000
+        published: 30000
+        protocol: tcp
+    environment:
+      - TIMEZONE=EST
+      - FOUNDRY_MINIFY_STATIC_FILES=true
+    volumes:
+      - type: bind
+        source: $PWD/data
+        target: /data
+    secrets:
+      - source: config_json
+        target: config.json
