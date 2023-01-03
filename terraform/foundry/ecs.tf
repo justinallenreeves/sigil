@@ -84,6 +84,7 @@ resource "aws_ecs_service" "foundry" {
   cluster         = aws_ecs_cluster.sigil.id
   task_definition = aws_ecs_task_definition.foundry_vtt_task.arn
   launch_type     = "FARGATE"
+  # iam_role        = aws_iam_role.foundry_s3_access.arn
   desired_count   = 1
   network_configuration {
     subnets          = data.aws_subnet.public.*.id
