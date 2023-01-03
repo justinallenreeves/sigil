@@ -61,16 +61,6 @@ variable "foundry_container_cpu" {
   default = 256
 }
 
-variable "vpc_id" {
-  type = string
-}
-
-variable "public_subnet_ids" {}
-
-variable "public_subnet_id_0" {}
-
-variable "private_subnet_ids" {}
-
 variable "foundry_timezone" {
   type    = string
   default = "EST"
