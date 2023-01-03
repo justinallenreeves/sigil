@@ -86,7 +86,28 @@ resource "aws_ecs_service" "foundry" {
   launch_type     = "FARGATE"
   desired_count   = 1
   network_configuration {
-    subnets          = var.public_subnet_ids
+    subnets          = data.aws_subnet.public.*.id
     assign_public_ip = true # Providing our containers with public IPs
+  }
+}
+
+data "aws_vpc" "sigil" {
+  filter {
+    name   = "tag-value"
+    values = ["sigil-vpc"]
+  }
+  filter {
+    name   = "tag-key"
+    values = ["Name"]
+  }
+}
+
+
+data "aws_subnet" "public" {
+  vpc_id = data.aws_vpc.sigil.id
+
+  filter {
+    name   = "tag:Name"
+    values = ["sigil-vpc-public-*"]
   }
 }

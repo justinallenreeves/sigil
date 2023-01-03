@@ -62,19 +62,14 @@ variable "foundry_container_cpu" {
 }
 
 variable "vpc_id" {
-  type      = string
-  sensitive = true
+  type = string
 }
 
-variable "public_subnet_ids" {
-  type      = list(string)
-  sensitive = true
-}
+variable "public_subnet_ids" {}
 
-variable "private_subnet_ids" {
-  type      = list(string)
-  sensitive = true
-}
+variable "public_subnet_id_0" {}
+
+variable "private_subnet_ids" {}
 
 variable "foundry_timezone" {
   type    = string
