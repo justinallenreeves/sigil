@@ -58,33 +58,11 @@ resource "aws_ecs_task_definition" "foundry_vtt_task" {
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
 }
 
-resource "aws_iam_role" "ecsTaskExecutionRole" {
-  name               = "ecsTaskExecutionRole"
-  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
-}
-
-data "aws_iam_policy_document" "assume_role_policy" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
-    }
-  }
-}
-
-resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
-  role       = aws_iam_role.ecsTaskExecutionRole.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
-
 resource "aws_ecs_service" "foundry" {
   name            = "foundry"
   cluster         = aws_ecs_cluster.sigil.id
   task_definition = aws_ecs_task_definition.foundry_vtt_task.arn
   launch_type     = "FARGATE"
-  # iam_role        = aws_iam_role.foundry_s3_access.arn
   desired_count   = 1
   network_configuration {
     subnets          = data.aws_subnet.public.*.id
@@ -102,7 +80,6 @@ data "aws_vpc" "sigil" {
     values = ["Name"]
   }
 }
-
 
 data "aws_subnet" "public" {
   vpc_id = data.aws_vpc.sigil.id
