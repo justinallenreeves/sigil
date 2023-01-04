@@ -51,10 +51,10 @@ resource "aws_ecs_task_definition" "foundry_vtt_task" {
     }
   ]
   DEFINITION
-  requires_compatibilities = ["FARGATE"]                  # Stating that we are using ECS Fargate
-  network_mode             = "awsvpc"                     # Using awsvpc as our network mode as this is required for Fargate
-  memory                   = var.foundry_container_memory # Specifying the memory our container requires
-  cpu                      = var.foundry_container_cpu    # Specifying the CPU our container requires
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  memory                   = var.foundry_container_memory
+  cpu                      = var.foundry_container_cpu
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
 }
 
@@ -64,14 +64,19 @@ resource "aws_ecs_service" "foundry" {
   task_definition = aws_ecs_task_definition.foundry_vtt_task.arn
   launch_type     = "FARGATE"
   desired_count   = 1
+
   network_configuration {
-    subnets          = data.aws_subnet.private.*.id
+    subnets          = data.aws_subnet.public.*.id
     assign_public_ip = true
   }
-  load_balancer {
-    target_group_arn = aws_lb_target_group.sigil_lb_tg.arn
-    container_name   = aws_ecs_task_definition.foundry_vtt_task.family
-    container_port   = var.foundry_container_port
-  }
+  # network_configuration {
+  #   subnets          = data.aws_subnet.private.*.id
+  #   assign_public_ip = false
+  # }
+  # load_balancer {
+  #   target_group_arn = aws_lb_target_group.sigil_lb_tg.arn
+  #   container_name   = aws_ecs_task_definition.foundry_vtt_task.family
+  #   container_port   = var.foundry_container_port
+  # }
 }
 
