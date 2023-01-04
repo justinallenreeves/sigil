@@ -1,18 +1,18 @@
-data "aws_ecr_repository" "foundry" {
+data "aws_ecr_repository" "foundry_repository" {
   name = "foundry"
 }
 
-resource "aws_ecs_cluster" "sigil" {
-  name = "sigil" # Naming the cluster
+resource "aws_ecs_cluster" "sigil_cluster" {
+  name = "sigil"
 }
 
-resource "aws_ecs_task_definition" "foundry_vtt_task" {
-  family                   = "foundry-vtt-task" # Naming our first task
+resource "aws_ecs_task_definition" "foundry_task" {
+  family                   = "foundry"
   container_definitions    = <<DEFINITION
   [
     {
-      "name": "foundry-vtt-task",
-      "image": "${data.aws_ecr_repository.foundry.repository_url}",
+      "name": "foundry",
+      "image": "${data.aws_ecr_repository.foundry_repository.repository_url}",
       "essential": true,
       "portMappings": [
         {
@@ -58,10 +58,10 @@ resource "aws_ecs_task_definition" "foundry_vtt_task" {
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
 }
 
-resource "aws_ecs_service" "foundry" {
+resource "aws_ecs_service" "foundry_service" {
   name            = "foundry"
-  cluster         = aws_ecs_cluster.sigil.id
-  task_definition = aws_ecs_task_definition.foundry_vtt_task.arn
+  cluster         = aws_ecs_cluster.sigil_cluster.id
+  task_definition = aws_ecs_task_definition.foundry_task.arn
   launch_type     = "FARGATE"
   desired_count   = 1
 
