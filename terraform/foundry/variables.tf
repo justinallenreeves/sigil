@@ -13,6 +13,11 @@ variable "name" {
   default = "foundry"
 }
 
+variable "environment" {
+  type    = string
+  default = "prod"
+}
+
 variable "foundry_ec2_ami" {
   type    = string
   default = "ami-09d3b3274b6c5d4aa"

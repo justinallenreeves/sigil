@@ -65,27 +65,13 @@ resource "aws_ecs_service" "foundry" {
   launch_type     = "FARGATE"
   desired_count   = 1
   network_configuration {
-    subnets          = data.aws_subnet.public.*.id
-    assign_public_ip = true # Providing our containers with public IPs
+    subnets          = data.aws_subnet.private.*.id
+    assign_public_ip = true
+  }
+  load_balancer {
+    target_group_arn = aws_lb_target_group.sigil_lb_tg.arn
+    container_name   = aws_ecs_task_definition.foundry_vtt_task.family
+    container_port   = var.foundry_container_port
   }
 }
 
-data "aws_vpc" "sigil" {
-  filter {
-    name   = "tag-value"
-    values = ["sigil-vpc"]
-  }
-  filter {
-    name   = "tag-key"
-    values = ["Name"]
-  }
-}
-
-data "aws_subnet" "public" {
-  vpc_id = data.aws_vpc.sigil.id
-
-  filter {
-    name   = "tag:Name"
-    values = ["sigil-vpc-public-*"]
-  }
-}
