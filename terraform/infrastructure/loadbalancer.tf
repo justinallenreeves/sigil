@@ -11,21 +11,21 @@
 #  }
 #}
 
-resource "aws_security_group" "sigil_lb_sg" {
-  ingress {
-    from_port   = 80 # Allowing traffic in from port 80
-    to_port     = 30000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Allowing traffic in from all sources
-  }
+# resource "aws_security_group" "sigil_lb_sg" {
+#   ingress {
+#     from_port   = 80 # Allowing traffic in from port 80
+#     to_port     = 30000
+#     protocol    = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"] # Allowing traffic in from all sources
+#   }
 
-  egress {
-    from_port   = 0             # Allowing any incoming port
-    to_port     = 0             # Allowing any outgoing port
-    protocol    = "-1"          # Allowing any outgoing protocol 
-    cidr_blocks = ["0.0.0.0/0"] # Allowing traffic out to all IP addresses
-  }
-}
+#   egress {
+#     from_port   = 0             # Allowing any incoming port
+#     to_port     = 0             # Allowing any outgoing port
+#     protocol    = "-1"          # Allowing any outgoing protocol 
+#     cidr_blocks = ["0.0.0.0/0"] # Allowing traffic out to all IP addresses
+#   }
+# }
 
 #resource "aws_lb_target_group" "sigil_lb_tg" {
 #  name        = "sigil-lb-tg"

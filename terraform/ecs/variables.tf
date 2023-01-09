@@ -45,33 +45,3 @@ variable "foundry_license_key" {
 variable "foundry_version" {
   type = string
 }
-
-variable "foundry_container_port" {
-  type    = number
-  default = 30000
-}
-
-variable "foundry_host_port" {
-  type    = number
-  default = 30000
-}
-
-variable "foundry_container_memory" {
-  type    = number
-  default = 512
-}
-
-variable "foundry_container_cpu" {
-  type    = number
-  default = 256
-}
-
-variable "foundry_timezone" {
-  type    = string
-  default = "EST"
-}
-
-variable "foundry_minify_static_files" {
-  type    = bool
-  default = true
-}

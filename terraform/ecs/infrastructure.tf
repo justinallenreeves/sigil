@@ -34,3 +34,13 @@ data "aws_security_groups" "sigil-sg" {
     values = [data.aws_vpc.sigil.id]
   }
 }
+
+data "aws_iam_role" "ecs_task_execution_role" {
+  name = "ecsTaskExecutionRole"
+}
+
+data "aws_iam_role" "foundry_s3_access" {
+  name = "foundry-s3-access"
+}
+
+data "aws_region" "current" {}

@@ -1,6 +1,6 @@
 
 resource "aws_s3_bucket" "foundry_assets" {
-  bucket = "${var.s3_bucket_prefix}.${var.name}.assets"
+  bucket = "${var.s3_bucket_prefix}.foundry.assets"
 }
 
 data "aws_iam_policy_document" "read_foundry_assets" {

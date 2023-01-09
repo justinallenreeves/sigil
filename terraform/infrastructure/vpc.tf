@@ -19,6 +19,7 @@ module "vpc" {
     Terraform   = "true"
     Environment = "prod"
   }
+
 }
 
 resource "aws_ec2_tag" "public_subnets" {

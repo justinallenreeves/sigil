@@ -77,3 +77,25 @@ resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
   role       = aws_iam_role.ecsTaskExecutionRole.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
+
+#data "aws_iam_policy_document" "create_logs_policy" {
+#  statement {
+#    actions = [
+#      "logs:CreateLogStream",
+#      "logs:PutLogEvents",
+#    ]
+#
+#    resources = ["${aws_cloudwatch_log_group.foundry.arn}:*"]
+#
+#    principals {
+#      identifiers = ["ecs.amazonaws.com"]
+#      type        = "Service"
+#    }
+#  }
+#}
+#
+#resource "aws_cloudwatch_log_resource_policy" "create_logs_policy" {
+#  policy_document = data.aws_iam_policy_document.create_logs_policy.json
+#  policy_name     = "create-logs-policy"
+#}
+#
