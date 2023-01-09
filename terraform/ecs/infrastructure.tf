@@ -14,13 +14,6 @@ data "aws_lb_target_group" "sigil_lb_tg" {
   name = "sigil-lb-tg"
 }
 
-data "aws_security_groups" "sigil-sg" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.sigil.id]
-  }
-}
-
 data "aws_region" "current" {}
 
 data "aws_subnets" "public" {

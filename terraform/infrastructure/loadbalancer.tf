@@ -14,6 +14,7 @@ resource "aws_alb" "sigil_lb" {
 }
 
 resource "aws_security_group" "sigil_lb_sg" {
+  name = "sigil-sg"
   vpc_id = module.vpc.vpc_id
   ingress {
     from_port   = 80 # Allowing traffic in from port 80

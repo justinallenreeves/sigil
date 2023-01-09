@@ -85,7 +85,7 @@ resource "aws_ecs_service" "foundry_service" {
   network_configuration {
     subnets          = data.aws_subnets.private.ids
     assign_public_ip = false
-    security_groups  = []
+    security_groups  = [data.aws_security_group.sigil_sg.id]
   }
 
   load_balancer {
@@ -139,4 +139,11 @@ resource "aws_iam_role" "task_role" {
 resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
   role       = aws_iam_role.task_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+data "aws_security_group" "sigil_sg" {
+  name = "sigil-sg"
+}
+output "sigil_sg" {
+  value = data.aws_security_group.sigil_sg
 }
