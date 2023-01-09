@@ -93,6 +93,12 @@ resource "aws_ecs_service" "foundry_service" {
     container_name   = aws_ecs_task_definition.foundry_task.family
     container_port   = 30000
   }
+
+  deployment_circuit_breaker {
+    enable   = true  # stop consuming resources when task fails
+    rollback = false # just fail fast
+  }
+
   lifecycle {
     ignore_changes = [tags]
   }
