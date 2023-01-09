@@ -7,8 +7,3 @@ variable "aws_region" {
 variable "s3_bucket_prefix" {
   type = string
 }
-
-variable "name" {
-  type    = string
-  default = "foundry"
-}

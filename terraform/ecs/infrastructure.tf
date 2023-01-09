@@ -10,22 +10,8 @@ data "aws_vpc" "sigil" {
   }
 }
 
-data "aws_subnet" "public" {
-  vpc_id = data.aws_vpc.sigil.id
-
-  filter {
-    name   = "tag:Name"
-    values = ["sigil-vpc-public-*"]
-  }
-}
-
-data "aws_subnet" "private" {
-  vpc_id = data.aws_vpc.sigil.id
-
-  filter {
-    name   = "tag:Name"
-    values = ["sigil-vpc-private-*"]
-  }
+data "aws_lb_target_group" "sigil_lb_tg" {
+  name = "sigil-lb-tg"
 }
 
 data "aws_security_groups" "sigil-sg" {
@@ -44,3 +30,17 @@ data "aws_iam_role" "foundry_s3_access" {
 }
 
 data "aws_region" "current" {}
+
+data "aws_subnets" "public" {
+  filter {
+    name   = "tag:Name"
+    values = ["sigil-vpc-public-*"]
+  }
+}
+
+data "aws_subnets" "private" {
+  filter {
+    name   = "tag:Name"
+    values = ["sigil-vpc-private-*"]
+  }
+}

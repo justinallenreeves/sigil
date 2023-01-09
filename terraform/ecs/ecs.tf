@@ -66,15 +66,19 @@ resource "aws_ecs_task_definition" "foundry_task" {
   ]
   DEFINITION
   requires_compatibilities = ["FARGATE"]
-  runtime_platform {
-    operating_system_family = "LINUX"
-    cpu_architecture        = "X86_64"
-  }
+  # runtime_platform {
+  #   operating_system_family = "LINUX"
+  #   cpu_architecture        = "X86_64"
+  # }
   network_mode       = "awsvpc"
   memory             = 512
   cpu                = 256
   execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
   task_role_arn      = data.aws_iam_role.foundry_s3_access.arn
+  # volume {
+  #   name      = "storage"
+  #   host_path = "/ecs/service-storage"
+  # }
   lifecycle {
     ignore_changes = [container_definitions]
   }
@@ -89,10 +93,6 @@ output "foundry_container_definitions" {
     execution_role_arn = aws_ecs_task_definition.foundry_task.execution_role_arn
     task_role_arn      = aws_ecs_task_definition.foundry_task.task_role_arn
     runtime_platform   = aws_ecs_task_definition.foundry_task.runtime_platform
-    # container_def_image     = aws_ecs_task_definition.foundry_task.container_definitions.image
-    # container_def_memory    = aws_ecs_task_definition.foundry_task.container_definitions[0].memory
-    # container_def_cpu       = aws_ecs_task_definition.foundry_task.container_definitions[0].cpu
-    # container_port_mappings = aws_ecs_task_definition.foundry_task.container_definitions[0].portMappings
   }
 }
 
@@ -104,29 +104,17 @@ resource "aws_ecs_service" "foundry_service" {
   desired_count   = 1
 
   network_configuration {
-    subnets          = data.aws_subnet.public.*.id
-    assign_public_ip = true
+    subnets          = data.aws_subnets.private.ids
+    assign_public_ip = false
+  }
+
+  load_balancer {
+    target_group_arn = data.aws_lb_target_group.sigil_lb_tg.arn
+    container_name   = aws_ecs_task_definition.foundry_task.family
+    container_port   = 30000
   }
 }
 
 output "foundry_service" {
   value = aws_ecs_service.foundry_service
 }
-
-#resource "aws_ecs_service" "foundry_service" {
-#  name            = "foundry"
-#  cluster         = aws_ecs_cluster.sigil_cluster.id
-#  task_definition = aws_ecs_task_definition.foundry_task.arn
-#  launch_type     = "FARGATE"
-#  desired_count   = 1
-#
-#  network_configuration {
-#    subnets          = data.aws_subnet.private.*.id
-#    assign_public_ip = false
-#  }
-#  load_balancer {
-#    target_group_arn = aws_lb_target_group.sigil_lb_tg.arn
-#    container_name   = aws_ecs_task_definition.foundry_vtt_task.family
-#    container_port   = var.foundry_container_port
-#  }
-#}

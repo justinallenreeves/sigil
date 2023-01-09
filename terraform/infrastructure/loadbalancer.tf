@@ -1,50 +1,61 @@
-#resource "aws_alb" "sigil_lb" {
-#  name               = "${var.name}-alb-${var.environment}"
-#  load_balancer_type = "application"
-#  subnets            = data.aws_subnet.public.*.id
-#  # Referencing the security group
-#  security_groups = [aws_security_group.sigil_lb_sg.id]
-#
-#  tags = {
-#    Terraform   = "true"
-#    Environment = "prod"
-#  }
-#}
+resource "aws_alb" "sigil_lb" {
+  name               = "sigil-alb"
+  load_balancer_type = "application"
+  subnets            = module.vpc.public_subnets
+  security_groups    = [aws_security_group.sigil_lb_sg.id]
 
-# resource "aws_security_group" "sigil_lb_sg" {
-#   ingress {
-#     from_port   = 80 # Allowing traffic in from port 80
-#     to_port     = 30000
-#     protocol    = "tcp"
-#     cidr_blocks = ["0.0.0.0/0"] # Allowing traffic in from all sources
-#   }
+  tags = {
+    Terraform   = "true"
+    Environment = "prod"
+  }
+}
 
-#   egress {
-#     from_port   = 0             # Allowing any incoming port
-#     to_port     = 0             # Allowing any outgoing port
-#     protocol    = "-1"          # Allowing any outgoing protocol 
-#     cidr_blocks = ["0.0.0.0/0"] # Allowing traffic out to all IP addresses
-#   }
-# }
+resource "aws_security_group" "sigil_lb_sg" {
+  vpc_id = module.vpc.vpc_id
+  ingress {
+    from_port   = 80 # Allowing traffic in from port 80
+    to_port     = 30000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Allowing traffic in from all sources
+  }
 
-#resource "aws_lb_target_group" "sigil_lb_tg" {
-#  name        = "sigil-lb-tg"
-#  port        = 80
-#  protocol    = "HTTP"
-#  target_type = "ip"
-#  vpc_id      = data.aws_vpc.sigil.id
-#  health_check {
-#    matcher = "200,301,302"
-#    path    = "/"
-#  }
-#}
+  egress {
+    from_port   = 0             # Allowing any incoming port
+    to_port     = 0             # Allowing any outgoing port
+    protocol    = "-1"          # Allowing any outgoing protocol 
+    cidr_blocks = ["0.0.0.0/0"] # Allowing traffic out to all IP addresses
+  }
+}
 
-# resource "aws_lb_listener" "listener" {
-#   load_balancer_arn = aws_alb.sigil_lb.arn # Referencing our load balancer
-#   port              = "80"
-#   protocol          = "HTTP"
-#   default_action {
-#     type             = "forward"
-#     target_group_arn = aws_lb_target_group.sigil_lb_tg.arn # Referencing our tagrte group
-#   }
-# }
+data "aws_vpc" "sigil" {
+  filter {
+    name   = "tag-value"
+    values = ["sigil-vpc"]
+  }
+  filter {
+    name   = "tag-key"
+    values = ["Name"]
+  }
+}
+
+resource "aws_lb_target_group" "sigil_lb_tg" {
+  name        = "sigil-lb-tg"
+  port        = 80
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = module.vpc.vpc_id
+  health_check {
+    matcher = "200,301,302"
+    path    = "/"
+  }
+}
+
+resource "aws_lb_listener" "listener" {
+  load_balancer_arn = aws_alb.sigil_lb.arn
+  port              = "80"
+  protocol          = "HTTP"
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.sigil_lb_tg.arn
+  }
+}
