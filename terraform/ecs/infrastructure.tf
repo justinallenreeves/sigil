@@ -21,14 +21,6 @@ data "aws_security_groups" "sigil-sg" {
   }
 }
 
-data "aws_iam_role" "ecs_task_execution_role" {
-  name = "ecsTaskExecutionRole"
-}
-
-data "aws_iam_role" "foundry_s3_access" {
-  name = "foundry-s3-access"
-}
-
 data "aws_region" "current" {}
 
 data "aws_subnets" "public" {

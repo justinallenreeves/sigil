@@ -45,3 +45,34 @@ variable "foundry_license_key" {
 variable "foundry_version" {
   type = string
 }
+
+variable "foundry_mem" {
+  default = 512
+}
+
+variable "foundry_cpu" {
+  default = 256
+}
+variable "foundry_container_port" {
+  default = 30000
+}
+
+variable "foundry_log_driver" {
+  default = "awslogs"
+  type = string
+}
+
+variable "foundry_awslog_stream_prefix" {
+  default = "foundry"
+  type = string
+}
+
+variable "foundry_timezone" {
+  default = "EST"
+  type = string
+}
+
+variable "foundry_minify_static_files" {
+  default = true
+  type = string
+}

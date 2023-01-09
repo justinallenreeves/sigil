@@ -18,7 +18,6 @@ module "vpc" {
     Terraform   = "true"
     Environment = "prod"
   }
-
 }
 
 output "vpc" {
@@ -35,18 +34,4 @@ output "public_subnets" {
 
 output "private_subnets" {
   value = module.vpc.private_subnets
-}
-
-resource "aws_ec2_tag" "public_subnets" {
-  for_each    = toset(module.vpc.public_subnets)
-  resource_id = each.value
-  key         = "Tier"
-  value       = "public"
-}
-
-resource "aws_ec2_tag" "private_subnets" {
-  for_each    = toset(module.vpc.private_subnets)
-  resource_id = each.value
-  key         = "Tier"
-  value       = "private"
 }

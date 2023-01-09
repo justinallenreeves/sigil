@@ -10,14 +10,6 @@ resource "aws_ecs_cluster" "sigil_cluster" {
   name = "sigil"
 }
 
-# "logConfiguration": {
-#   "logDriver": "awslogs",
-#   "options": {
-#     "awslogs-group": "${var.cloudwatch_group}",
-#     "awslogs-region": "${data.aws_region.current.value}",
-#     "awslogs-stream-prefix": "ecs"
-#   }
-# },
 
 resource "aws_ecs_task_definition" "foundry_task" {
   family                   = "foundry"
@@ -29,21 +21,29 @@ resource "aws_ecs_task_definition" "foundry_task" {
       "essential": true,
       "portMappings": [
         {
-          "containerPort": 30000,
+          "containerPort": ${var.foundry_container_port},
           "protocal": "tcp",
           "appProtocol": "http"
         }
       ],
-      "memory": 512,
-      "cpu": 256,
+      "memory": ${var.foundry_mem},
+      "cpu": ${var.foundry_cpu},
+      "logConfiguration": {
+        "logDriver": "${var.foundry_log_driver}",
+        "options": {
+          "awslogs-group": "${aws_cloudwatch_log_group.sigil_clg.name}",
+          "awslogs-region": "${data.aws_region.current.name}",
+          "awslogs-stream-prefix": "${var.foundry_awslog_stream_prefix}"
+        }
+      },
       "environment": [
         {
           "name": "TIMEZONE",
-          "value": "EST"
+          "value": "${var.foundry_timezone}"
         },
         {
           "name": "FOUNDRY_MINIFY_STATIC_FILES",
-          "value": "true"
+          "value": "${var.foundry_minify_static_files}"
         },
         {
           "name": "FOUNDRY_USERNAME",
@@ -66,33 +66,12 @@ resource "aws_ecs_task_definition" "foundry_task" {
   ]
   DEFINITION
   requires_compatibilities = ["FARGATE"]
-  # runtime_platform {
-  #   operating_system_family = "LINUX"
-  #   cpu_architecture        = "X86_64"
-  # }
-  network_mode       = "awsvpc"
-  memory             = 512
-  cpu                = 256
-  execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
-  task_role_arn      = data.aws_iam_role.foundry_s3_access.arn
-  # volume {
-  #   name      = "storage"
-  #   host_path = "/ecs/service-storage"
-  # }
+  network_mode             = "awsvpc"
+  memory                   = var.foundry_mem
+  cpu                      = var.foundry_cpu
+  execution_role_arn       = aws_iam_role.task_role.arn
   lifecycle {
     ignore_changes = [container_definitions]
-  }
-}
-
-output "foundry_container_definitions" {
-  value = {
-    arn                = aws_ecs_task_definition.foundry_task.arn
-    family             = aws_ecs_task_definition.foundry_task.family
-    memory             = aws_ecs_task_definition.foundry_task.memory
-    cpu                = aws_ecs_task_definition.foundry_task.memory
-    execution_role_arn = aws_ecs_task_definition.foundry_task.execution_role_arn
-    task_role_arn      = aws_ecs_task_definition.foundry_task.task_role_arn
-    runtime_platform   = aws_ecs_task_definition.foundry_task.runtime_platform
   }
 }
 
@@ -106,6 +85,7 @@ resource "aws_ecs_service" "foundry_service" {
   network_configuration {
     subnets          = data.aws_subnets.private.ids
     assign_public_ip = false
+    security_groups  = []
   }
 
   load_balancer {
@@ -113,8 +93,50 @@ resource "aws_ecs_service" "foundry_service" {
     container_name   = aws_ecs_task_definition.foundry_task.family
     container_port   = 30000
   }
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
-output "foundry_service" {
-  value = aws_ecs_service.foundry_service
+resource "aws_cloudwatch_log_group" "sigil_clg" {
+  name              = "sigil-clg"
+  retention_in_days = 1
+}
+
+data "aws_iam_policy_document" "ecs_task_assume_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "task_role" {
+  name               = "ecs-task-foundry-${terraform.workspace}"
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_policy.json
+
+  inline_policy {
+    name = "ecs-task-permissions"
+    policy = jsonencode({
+      Version = "2012-10-17"
+      Statement = [
+        {
+          Action = [
+            "ecr:*",
+            "logs:*",
+            "s3:*"
+          ]
+          Effect   = "Allow"
+          Resource = "*"
+        }
+      ]
+    })
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
+  role       = aws_iam_role.task_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
