@@ -32,8 +32,8 @@ data "aws_iam_policy_document" "ecs_s3" {
     actions = ["s3:*"]
     effect  = "Allow"
     resources = [
-      "arn:aws:s3:::${var.foundry_assets_s3_bucket}",
-      "arn:aws:s3:::${var.foundry_assets_s3_bucket}/*"
+      "arn:aws:s3:::${var.assets_bucket}",
+      "arn:aws:s3:::${var.assets_bucket}/*"
     ]
   }
 }

@@ -2,7 +2,7 @@ variable "prefix" {
   type = string
 }
 
-variable "asset_bucket_name" {
+variable "name" {
   type = string
 }
 

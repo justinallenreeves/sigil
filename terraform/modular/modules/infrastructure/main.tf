@@ -10,12 +10,13 @@ module "sigil_vpc" {
   enable_nat_gateway = false
   enable_vpn_gateway = false
 
-  tags = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
 }
 
 resource "aws_ecs_cluster" "sigil_cluster" {
   name = "sigil-cluster"
 }
+
+resource "aws_cloudwatch_log_group" "sigil_cw_lg" {
+  name = "sigil-cw-lg"
+}
+

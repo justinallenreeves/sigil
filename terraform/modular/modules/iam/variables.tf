@@ -1,3 +1,3 @@
-variable "foundry_assets_s3_bucket" {
+variable "assets_bucket" {
   type = string
 }
