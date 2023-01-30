@@ -6,7 +6,8 @@ secrets:
 
 services:
   sigil:
-    image: felddy/foundryvtt:release
+    # image: felddy/foundryvtt:release
+    image: 817831614729.dkr.ecr.us-east-1.amazonaws.com/foundry:10.291.0
     container_name: sigil
     init: true
     # restart: "on-failure"

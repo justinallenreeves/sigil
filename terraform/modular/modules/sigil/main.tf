@@ -54,8 +54,9 @@ resource "aws_ecs_task_definition" "foundry_task" {
 }
 
 resource "aws_ecs_service" "foundry_service" {
-  name            = "foundry"
-  cluster         = var.ecs_cluster_id
+  name    = "foundry"
+  cluster = var.ecs_cluster_id
+  # task_definition = "${aws_ecs_task_definition.foundry_task.family}:${aws_ecs_task_definition.foundry_task.revision}"
   task_definition = aws_ecs_task_definition.foundry_task.arn
   launch_type     = "FARGATE"
   desired_count   = var.foundry_instances
@@ -80,4 +81,8 @@ resource "aws_ecs_service" "foundry_service" {
   lifecycle {
     ignore_changes = [tags]
   }
+
+  depends_on = [
+    aws_ecs_task_definition.foundry_task
+  ]
 }

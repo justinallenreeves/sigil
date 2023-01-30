@@ -33,7 +33,7 @@ module "sigil" {
   aws_region                  = data.aws_region.current.name
   foundry_instances           = 1
   foundry_version             = "10.291.0"
-  foundry_container_port      = 80 # 30000
+  foundry_container_port      = 80
   foundry_mem                 = 512
   foundry_cpu                 = 256
   foundry_timezone            = "EST"
