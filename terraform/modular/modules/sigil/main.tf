@@ -17,6 +17,9 @@ data "aws_ecr_image" "foundry_image" {
   image_tag       = var.foundry_version
 }
 
+resource "aws_conta" "name" {
+}
+
 resource "aws_ecs_task_definition" "foundry_task" {
   family = "foundry"
   container_definitions = jsonencode([{
