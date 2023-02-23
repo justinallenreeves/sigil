@@ -8,11 +8,6 @@ variable "s3_bucket_prefix" {
   type = string
 }
 
-variable "foundry_ec2_ami" {
-  type    = string
-  default = "ami-09d3b3274b6c5d4aa"
-}
-
 variable "foundry_password" {
   type      = string
   sensitive = true
